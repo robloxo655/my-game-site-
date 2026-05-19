@@ -1,0 +1,352 @@
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    font-family: 'Pixelify Sans', sans-serif !important;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: black;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    transition: none; 
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  #settingsBox {
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+    background: #111;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #333;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1000;
+  }
+
+  .settings-row {
+    width: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 10px;
+  }
+
+  .custom-select {
+    position: relative;
+    width: 200px;
+    text-align: left;
+  }
+
+  .select-trigger {
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 8px;
+    margin-top: 5px;
+    display: none; 
+    z-index: 1100;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .select-options div {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .select-options div:hover {
+    background: #444;
+  }
+
+  .show { display: block !important; }
+
+  input[type="text"] {
+    background: #222;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 10px;
+    outline: none;
+    width: 100%;
+  }
+
+  button.action-btn {
+    padding: 8px 15px;
+    background: #5d83f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .game-card {
+    width: 200px; height: 200px; border: 3px solid white; border-radius: 15px; 
+    overflow: hidden; background: none; cursor: pointer; padding: 0;
+    transition: transform 0.2s;
+  }
+  .game-card:hover { transform: scale(1.05); }
+  .game-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+</style>
+
+<div id="settingsBox">
+  <h2 id="settingsToggle" onclick="toggleSettings()" style="margin: 0; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; user-select: none;">
+    Settings <span id="settingsArrow" style="transition: transform 0.3s; display: inline-block;">▼</span>
+  </h2>
+
+  <div id="settingsContent" style="display: none; flex-direction: column; gap: 20px; align-items: center; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+    
+    <div class="settings-row">
+      <label style="color: #bbb;">Tab Cloak:</label>
+      <div class="custom-select">
+        <div class="select-trigger" onclick="toggleDropdown(event, 'cloakOptions')">
+          <span id="currentCloak">DeFault (Citadel)</span> <span>▼</span>
+        </div>
+        <div id="cloakOptions" class="select-options">
+          <div onclick="selectCloak('default', 'DeFault (Citadel)')">DeFault (Citadel)</div>
+          <div onclick="selectCloak('none', 'None (Empty Tab)')">None (Empty Tab)</div>
+          <div onclick="selectCloak('google', 'Google Search')">Google Search</div>
+          <div onclick="selectCloak('drive', 'Google Drive')">Google Drive</div>
+          <div onclick="selectCloak('classroom', 'Google Classroom')">Google Classroom</div>
+          <div onclick="selectCloak('docs', 'Google Docs')">Google Docs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <label style="color: #bbb;">Preset BG:</label>
+      <div class="custom-select">
+        <div class="select-trigger" onclick="toggleDropdown(event, 'bgOptions')">
+          <span id="currentBG">Deep Black</span> <span>▼</span>
+        </div>
+        <div id="bgOptions" class="select-options">
+          <div onclick="selectBG('black', 'Deep Black')">Deep Black</div>
+          <div onclick="selectBG('#1a1a1a', 'Dark Grey')">Dark Grey</div>
+          <div onclick="selectBG('#0d1117', 'GitHub Dark')">GitHub Dark</div>
+          <div onclick="selectBG('#1e1e2e', 'Mocha Purple')">Mocha Purple</div>
+          <div onclick="selectBG('linear-gradient(135deg, #000428, #004e92)', 'Midnight Blue')">Midnight Blue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <label style="color: #bbb;">Title Colors:</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="color" id="textCol1" value="#0000FF" oninput="applyTextGradient()" style="width: 45px; height: 45px; border: none; background: none; cursor: pointer; padding: 0;">
+        <input type="color" id="textCol2" value="#800080" oninput="applyTextGradient()" style="width: 45px; height: 45px; border: none; background: none; cursor: pointer; padding: 0;">
+      </div>
+    </div>
+
+    <div style="width: 90%;">
+      <label style="display: block; margin-bottom: 8px; color: #bbb; text-align: left;">Custom Background URL</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="bgInput" placeholder="Paste image link...">
+        <button class="action-btn" onclick="applyAndSaveCustomBG()">Set</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p id="mainTitle" style="font-size: 100px; display: block; width: fit-content; margin: 10px auto 40px auto; text-align: center; background: linear-gradient(90deg, blue, purple); -webkit-background-clip: text; color: transparent; padding-bottom: 10px;">
+  Citadel
+</p>
+
+<div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; padding-bottom: 50px;">
+    <button class="game-card" onclick="launchGame('https://fastly.jsdelivr.net/gh/robloxo655/allgamespossible5@main/index.html')">
+      <img src="https://static.vecteezy.com/system/resources/previews/027/179/375/non_2x/google-docs-icon-logo-symbol-free-png.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/gn-math2@main/new.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/gn-math.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/adofai@main/j.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/adofai.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/dtr@main/index.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/deltarune%20image.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/hk@main/index.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/hollow%20knight.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/balatro@main/index.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/balatro-non-stretch.jpg">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/getaway-shootout3@main/index.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/getaway-shootout.png">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/mario-63@main/index.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/super-mario-63-a-ridiculously-impressive-flash-game-v0-8y12r1EA1N_l6A1evwU3IvLQzQe2Y4RJo8FX4kC-JRk.webp">
+    </button>
+    <button class="game-card" onclick="launchGame('https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/games/dogeubfix1.html')">
+      <img src="https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/dogeunblocker.webp">
+    </button>
+</div>
+
+<script>
+  function toggleSettings() {
+    const content = document.getElementById('settingsContent');
+    const arrow = document.getElementById('settingsArrow');
+    if (content.style.display === "none" || content.style.display === "") {
+      content.style.display = "flex";
+      arrow.style.transform = "rotate(180deg)";
+    } else {
+      content.style.display = "none";
+      arrow.style.transform = "rotate(0deg)";
+      document.querySelectorAll('.select-options').forEach(opt => opt.classList.remove('show'));
+    }
+  }
+
+  function toggleDropdown(event, id) {
+    event.stopPropagation();
+    const target = document.getElementById(id);
+    const isShowing = target.classList.contains('show');
+    document.querySelectorAll('.select-options').forEach(opt => opt.classList.remove('show'));
+    if (!isShowing) target.classList.add('show');
+  }
+
+  window.onclick = function(e) {
+    if (!e.target.closest('.custom-select')) {
+      document.querySelectorAll('.select-options').forEach(opt => opt.classList.remove('show'));
+    }
+  }
+
+  const cloaks = {
+    'default': { title: 'Citadel | Games', icon: 'https://cdn.jsdelivr.net/gh/robloxo655/my-game-site-@main/images/nebula.jpg' },
+    'google': { title: 'Google', icon: 'https://www.google.com/favicon.ico' },
+    'drive': { title: 'My Drive - Google Drive', icon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' },
+    'classroom': { title: 'Classes', icon: 'https://ssl.gstatic.com/classroom/favicon.png' },
+    'docs': { title: 'Google Docs', icon: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico' },
+    'none': { title: ' ', icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' }
+  };
+
+  function selectCloak(val, text) {
+    document.getElementById('currentCloak').innerText = text;
+    localStorage.setItem('selectedCloak', val);
+    applyCloak(val);
+  }
+
+  function selectBG(val, text) {
+    document.getElementById('currentBG').innerText = text;
+    localStorage.removeItem('customBG');
+    localStorage.setItem('selectedPresetBG', val);
+    updateBackground(val, false);
+  }
+
+  function applyCloak(type) {
+    const cloak = cloaks[type] || cloaks['default'];
+    document.title = cloak.title;
+    let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon'; link.rel = 'shortcut icon'; link.href = cloak.icon;
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }
+
+  function applyTextGradient() {
+    const c1 = document.getElementById('textCol1').value;
+    const c2 = document.getElementById('textCol2').value;
+    const titleText = document.getElementById('mainTitle');
+    titleText.style.background = `linear-gradient(90deg, ${c1}, ${c2})`;
+    titleText.style.webkitBackgroundClip = "text";
+    titleText.style.webkitTextFillColor = "transparent";
+    localStorage.setItem('titleCol1', c1);
+    localStorage.setItem('titleCol2', c2);
+  }
+
+  function applyAndSaveCustomBG() {
+    const url = document.getElementById('bgInput').value;
+    if(url) {
+      localStorage.removeItem('selectedPresetBG');
+      localStorage.setItem('customBG', url);
+      updateBackground(url, true);
+      document.getElementById('currentBG').innerText = 'Custom Image';
+    }
+  }
+
+  function updateBackground(value, isImage) {
+    document.body.style.backgroundColor = "black";
+    if (isImage) {
+      document.body.style.backgroundImage = `url('${value}')`;
+    } else if (value.includes('gradient')) {
+      document.body.style.backgroundImage = value;
+    } else {
+      document.body.style.backgroundImage = "none";
+      document.body.style.backgroundColor = value;
+    }
+  }
+
+  function launchGame(url) {
+    const savedCloak = localStorage.getItem('selectedCloak') || 'default';
+    const cloak = cloaks[savedCloak];
+    fetch(url + (url.includes('?') ? '&' : '?') + "t=" + Date.now()).then(r => r.text()).then(t => {
+      const w = window.open("about:blank");
+      if (w) {
+        w.document.open();
+        w.document.write(t);
+        w.document.title = cloak.title;
+        const link = w.document.createElement("link");
+        link.rel = "icon"; link.href = cloak.icon;
+        w.document.head.appendChild(link);
+        w.document.close();
+      }
+    });
+  }
+
+  window.onload = function() {
+    let savedCloak = localStorage.getItem('selectedCloak') || 'default';
+    applyCloak(savedCloak);
+    
+    const cloakMap = {
+        'default': 'DeFault (Citadel)', 
+        'none': 'None (Empty Tab)', 
+        'google': 'Google Search', 
+        'drive': 'Google Drive', 
+        'classroom': 'Google Classroom', 
+        'docs': 'Google Docs'
+    };
+    document.getElementById('currentCloak').innerText = cloakMap[savedCloak] || 'DeFault (Citadel)';
+
+    let tc1 = localStorage.getItem('titleCol1') || '#0000FF';
+    let tc2 = localStorage.getItem('titleCol2') || '#800080';
+    document.getElementById('textCol1').value = tc1;
+    document.getElementById('textCol2').value = tc2;
+    applyTextGradient();
+
+    let custom = localStorage.getItem('customBG');
+    let preset = localStorage.getItem('selectedPresetBG') || 'black';
+    if (custom) {
+      document.getElementById('bgInput').value = custom;
+      updateBackground(custom, true);
+      document.getElementById('currentBG').innerText = 'Custom Image';
+    } else {
+      updateBackground(preset, false);
+      const bgMap = {'black': 'Deep Black', '#1a1a1a': 'Dark Grey', '#0d1117': 'GitHub Dark', '#1e1e2e': 'Mocha Purple', 'linear-gradient(135deg, #000428, #004e92)': 'Midnight Blue'};
+      document.getElementById('currentBG').innerText = bgMap[preset] || 'Deep Black';
+    }
+  }
+</script>
